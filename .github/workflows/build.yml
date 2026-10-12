@@ -1,4 +1,7 @@
-workflow_dispatch:
+name: Build JARVIS Android APK
+
+on:
+  workflow_dispatch:
   push:
     paths:
       - "JarvisAndroid.zip"
