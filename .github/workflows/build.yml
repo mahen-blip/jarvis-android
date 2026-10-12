@@ -35,6 +35,28 @@ jobs:
           test -f JarvisAndroid/settings.gradle.kts
           test -f JarvisAndroid/app/build.gradle.kts
 
+      - name: Align Java and Kotlin JVM targets
+        working-directory: JarvisAndroid
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path("app/build.gradle.kts")
+          s = p.read_text()
+          old = '    buildFeatures { compose = true }'
+          new = '''    compileOptions {
+                sourceCompatibility = JavaVersion.VERSION_17
+                targetCompatibility = JavaVersion.VERSION_17
+            }
+            kotlinOptions {
+                jvmTarget = "17"
+            }
+            buildFeatures { compose = true }'''
+          if old not in s:
+              raise SystemExit("Could not find expected buildFeatures line")
+          p.write_text(s.replace(old, new, 1))
+          PY
+          
       - name: Download Gradle 8.9
         run: |
           curl -fL --retry 3 \
